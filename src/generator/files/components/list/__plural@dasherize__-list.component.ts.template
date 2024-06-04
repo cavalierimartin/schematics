@@ -1,0 +1,39 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { <%= classify(singular) %> } from '../../../models/<%= dasherize(singular) %>';
+import { <%= classify(singular) %>Store } from '../../../store/<%= dasherize(singular) %>.store';
+import { LoadingComponent } from '../../common/loading/loading.component';
+import { States } from '../../../models/common';
+@Component({
+  selector: 'app-<%= dasherize(plural) %>-list',
+  standalone: true,
+  imports: [CommonModule, LoadingComponent],
+  templateUrl: './<%= dasherize(plural) %>-list.component.html',
+  styleUrls: ['./<%= dasherize(plural) %>-list.component.scss']
+})
+export class <%= classify(plural) %>ListComponent implements OnInit {
+  states = States;
+  router = inject(Router);
+  readonly <%= camelize(singular) %>Store = inject(<%= classify(singular) %>Store)
+
+  ngOnInit(): void {
+    this.<%= camelize(singular) %>Store.clearSelected<%= classify(singular) %>();
+  }
+
+  onEdit(<%= camelize(singular) %>: <%= classify(singular) %>) {
+    this.<%= camelize(singular) %>Store.select<%= classify(singular) %>(<%= camelize(singular) %>);
+    this.router.navigate(['/<%= dasherize(plural) %>/update']);
+  }
+
+  onDelete(<%= camelize(singular) %>Id?: string) {
+    if (!<%= camelize(singular) %>Id) {
+      return;
+    }
+    this.<%= camelize(singular) %>Store.delete<%= classify(singular) %>(<%= camelize(singular) %>Id);
+  }
+
+  onAdd() {
+    this.router.navigate(['/<%= dasherize(plural) %>/update']);
+  }
+}

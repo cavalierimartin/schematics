@@ -1,0 +1,95 @@
+import { <%= classify(singular) %> } from "../models/<%= dasherize(singular) %>";
+import { patchState, signalStore, withHooks, withMethods, withState } from "@ngrx/signals";
+import { inject } from "@angular/core";
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { catchError, from, of, pipe, switchMap, tap } from "rxjs";
+import { <%= classify(singular) %>Service } from "../services/<%= dasherize(singular) %>.service";
+import { States } from "../models/common";
+
+interface <%= classify(singular) %>State {
+    <%= camelize(plural) %>: <%= classify(singular) %>[];
+    selected<%= classify(singular) %>: <%= classify(singular) %> | null;
+    state: { name: States, message?: string };
+}
+
+const initialState: <%= classify(singular) %>State = {
+    <%= camelize(plural) %>: [],
+    selected<%= classify(singular) %>: null,
+    state: { name: States.LOADING }
+};
+
+export const <%= classify(singular) %>Store = signalStore(
+    { providedIn: 'root' },
+    withState(initialState),
+    withMethods((<%= camelize(singular) %>Store, <%= camelize(singular) %>Service = inject(<%= classify(singular) %>Service)) => ({
+        load<%= classify(plural) %>: rxMethod(
+            pipe(
+                tap(() => patchState(<%= camelize(singular) %>Store, { state: { name: States.LOADING } })),
+                switchMap(() => {
+                    return <%= camelize(singular) %>Service.get<%= classify(plural) %>().pipe(
+                        tap((<%= camelize(plural) %>) => {
+                            patchState(<%= camelize(singular) %>Store, { <%= camelize(plural) %>, state: { name: States.LOADED } });
+                        })
+                    );
+                })
+            )
+        ),
+        add<%= classify(singular) %>: rxMethod<<%= classify(singular) %>>(
+            pipe(
+                tap(() => patchState(<%= camelize(singular) %>Store, { state: { name: States.LOADING } })),
+                switchMap((<%= camelize(singular) %>) => {
+                    return <%= camelize(singular) %>Service.add<%= classify(singular) %>(<%= camelize(singular) %>).then(() => {
+                        patchState(<%= camelize(singular) %>Store, { state: { name: States.LOADED } });
+                    })
+                    // .catch((error) => {
+                    //     patchState(<%= camelize(singular) %>Store, { state: { name: States.ERROR, message: error.message } });
+                    //     return of(null);
+                    // });
+                })
+            )
+        ),
+        update<%= classify(singular) %>: rxMethod<<%= classify(singular) %>>(
+            pipe(
+                tap(() => patchState(<%= camelize(singular) %>Store, { state: { name: States.LOADING } })),
+                switchMap((updated<%= classify(singular) %>) => {
+                    return from(<%= camelize(singular) %>Service.update<%= classify(singular) %>(updated<%= classify(singular) %>)).pipe(
+                        tap(() => {
+                            patchState(<%= camelize(singular) %>Store, { state: { name: States.LOADED } });
+                        }),
+                        // catchError((error) => {
+                        //     patchState(<%= camelize(singular) %>Store, { state: { name: States.ERROR, message: error.message } });
+                        //     return of(null);
+                        // })
+                    );
+                })
+            )
+        ),
+        select<%= classify(singular) %>: (<%= camelize(singular) %>: <%= classify(singular) %>) => {
+            patchState(<%= camelize(singular) %>Store, { selected<%= classify(singular) %>: <%= camelize(singular) %> });
+        },
+        clearSelected<%= classify(singular) %>: () => {
+            patchState(<%= camelize(singular) %>Store, { selected<%= classify(singular) %>: null });
+        },
+        delete<%= classify(singular) %>: rxMethod<string>(
+            pipe(
+                tap(() => patchState(<%= camelize(singular) %>Store, { state: { name: States.LOADING } })),
+                switchMap((<%= camelize(singular) %>Id) => {
+                    return from(<%= camelize(singular) %>Service.delete<%= classify(singular) %>(<%= camelize(singular) %>Id)).pipe(
+                        tap(() => {
+                            patchState(<%= camelize(singular) %>Store, { state: { name: States.LOADED } });
+                        }),
+                        // catchError((error) => {
+                        //     patchState(<%= camelize(singular) %>Store, { state: { name: States.ERROR, message: error.message } });
+                        //     return of(null);
+                        // })
+                    );
+                })
+            )
+        ),
+    })),
+    withHooks({
+        onInit(<%= camelize(singular) %>Store) {
+            <%= camelize(singular) %>Store.load<%= classify(plural) %>(0);
+        },
+    })
+)

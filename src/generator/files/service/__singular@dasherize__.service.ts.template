@@ -1,0 +1,67 @@
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { <%= classify(singular) %> } from '../models/<%= dasherize(singular) %>';
+import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { Auth, user } from '@angular/fire/auth';
+import { switchMap } from 'rxjs/operators';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class <%= classify(singular) %>Service {
+
+    private firestore = inject(Firestore);
+    private authService = inject(Auth);
+
+    get<%= classify(plural) %>(): Observable<<%= classify(singular) %>[]> {
+        return user(this.authService).pipe(
+            switchMap(user => {
+                if (user) {
+                    const <%= camelize(plural) %>Collection = collection(this.firestore, `users/${user.uid}/<%= dasherize(plural) %>`); // No estoy seguro de que las url sean dasherize
+                    return collectionData(<%= camelize(plural) %>Collection, { idField: 'id' }) as Observable<<%= classify(singular) %>[]>;
+                } else {
+                    return [];
+                }
+            })
+        );
+    }
+
+    add<%= classify(singular) %>(<%= camelize(singular) %>: <%= classify(singular)%>) {
+        return user(this.authService).pipe(
+            switchMap(user => {
+                if (user) {
+                    const <%= camelize(plural) %>Collection = collection(this.firestore, `users/${user.uid}/<%= dasherize(plural) %>`);
+                    return addDoc(<%= camelize(plural) %>Collection, <%= camelize(singular) %>);
+                } else {
+                    throw new Error('User not authenticated');
+                }
+            })
+        ).toPromise();
+    }
+
+    update<%= classify(singular) %>(<%= camelize(singular) %>: <%= classify(singular)%>) {
+        return user(this.authService).pipe(
+            switchMap(user => {
+                if (user && <%= camelize(singular) %>.id) {
+                    const <%= camelize(singular) %>Doc = doc(this.firestore, `users/${user.uid}/<%= dasherize(plural) %>/${<%= camelize(singular) %>.id}`);
+                    return updateDoc(<%= camelize(singular) %>Doc, {...<%= camelize(singular) %>});
+                } else {
+                    throw new Error('User not authenticated or <%= camelize(singular) %> ID missing');
+                }
+            })
+        ).toPromise();
+    }
+
+    delete<%= classify(singular) %>(<%= camelize(singular) %>Id: string) {
+        return user(this.authService).pipe(
+            switchMap(user => {
+                if (user) {
+                    const <%= camelize(singular) %>Doc = doc(this.firestore, `users/${user.uid}/<%= dasherize(plural) %>/${<%= camelize(singular) %>Id}`);
+                    return deleteDoc(<%= camelize(singular) %>Doc);
+                } else {
+                    throw new Error('User not authenticated');
+                }
+            })
+        ).toPromise();
+    }
+}

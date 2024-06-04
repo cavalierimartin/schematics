@@ -1,0 +1,18 @@
+{
+  "schema": "http://json-schema.org/schema",
+  "$id": "GeneratorSchema",
+  "title": "My Generator Schema",
+  "type": "object",
+  "properties": {
+    "singular": {
+      "type": "string",
+      "description": "The singular name of the component",
+      "x-prompt": "Please enter the singular name of the component"
+    },
+    "plural": {
+      "type": "string",
+      "description": "The plural name of the component",
+      "x-prompt": "Please enter the plural name of the component"
+    }
+  }
+}

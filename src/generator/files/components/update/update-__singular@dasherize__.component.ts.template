@@ -1,0 +1,42 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { <%= classify(singular) %> } from '../../../models/<%= dasherize(singular) %>';
+import { <%= classify(singular) %>Store } from '../../../store/<%= dasherize(singular) %>.store';
+import { Actions } from '../../../models/common';
+
+@Component({
+  selector: 'app-update-<%= dasherize(singular) %>',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './update-<%= dasherize(singular) %>.component.html',
+  styleUrls: ['./update-<%= dasherize(singular) %>.component.scss']
+})
+export class Update<%= classify(singular) %>Component implements OnInit {
+  <%= capitalize(singular) %>: <%= classify(singular) %> = { name: '', code: '', symbol: '' }; // #TODO: FIXME: usar la interface
+  <%= capitalize(singular) %>Store = inject(<%= classify(singular) %>Store);
+  router = inject(Router);
+  action = this.<%= capitalize(singular) %>Store.selected<%= classify(singular) %>() ? Actions.CREATE : Actions.UPDATE;
+
+  ngOnInit() {
+    this.<%= capitalize(singular) %> = this.<%= capitalize(singular) %>Store.selected<%= classify(singular) %>() || this.<%= capitalize(singular) %>;
+    console.log(this.<%= capitalize(singular) %>Store.selected<%= classify(singular) %>());
+  }
+
+  onSave() {
+    if (this.action === Actions.CREATE) {
+      // Update existing <%= capitalize(singular) %>
+      this.<%= capitalize(singular) %>Store.update<%= classify(singular) %>(this.<%= capitalize(singular) %>);
+      this.router.navigate(['/<%= dasherize(plural) %>']);
+    } else {
+      // Add new <%= capitalize(singular) %>
+      this.<%= capitalize(singular) %>Store.add<%= classify(singular) %>(this.<%= capitalize(singular) %>);
+      this.router.navigate(['/<%= dasherize(plural) %>']);
+    }
+  }
+  
+  onCancel() {
+    this.router.navigate(['/<%= dasherize(plural) %>']);
+  }
+}

@@ -1,0 +1,13 @@
+<div>
+    {{ <%= camelize(singular) %>Store.state().name }}
+    <h3>{{ <%= camelize(singular) %>Store.selected<%= classify(singular) %>()?.id ? 'Edit <%= capitalize(singular) %>' : 'Add New <%= capitalize(singular) %>' }}</h3>
+    <form (ngSubmit)="onSave()">
+    <!-- #TODO: #FIXME: cambiar el form por el que corresponda -->
+        <label>
+            Name:
+            <input [(ngModel)]="<%= camelize(singular) %>.name" name="name" required>
+        </label>
+        <button type="submit">{{ <%= camelize(singular) %>.id ? 'Update' : 'Add' }}</button>
+        <button type="button" (click)="onCancel()">Cancel</button>
+    </form>
+</div>
