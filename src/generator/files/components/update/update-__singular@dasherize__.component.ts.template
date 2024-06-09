@@ -14,24 +14,24 @@ import { Actions } from '../../../models/common';
   styleUrls: ['./update-<%= dasherize(singular) %>.component.scss']
 })
 export class Update<%= classify(singular) %>Component implements OnInit {
-  <%= capitalize(singular) %>: <%= classify(singular) %> = { name: '', code: '', symbol: '' }; // #TODO: FIXME: usar la interface
-  <%= capitalize(singular) %>Store = inject(<%= classify(singular) %>Store);
+  <%= camelize(singular) %>: <%= classify(singular) %> = { name: '', code: '', symbol: '' }; // #TODO: FIXME: usar la interface
+  <%= camelize(singular) %>Store = inject(<%= classify(singular) %>Store);
   router = inject(Router);
-  action = this.<%= capitalize(singular) %>Store.selected<%= classify(singular) %>() ? Actions.CREATE : Actions.UPDATE;
+  action = this.<%= camelize(singular) %>Store.selected<%= classify(singular) %>() ? Actions.CREATE : Actions.UPDATE;
 
   ngOnInit() {
-    this.<%= capitalize(singular) %> = this.<%= capitalize(singular) %>Store.selected<%= classify(singular) %>() || this.<%= capitalize(singular) %>;
-    console.log(this.<%= capitalize(singular) %>Store.selected<%= classify(singular) %>());
+    this.<%= camelize(singular) %> = this.<%= camelize(singular) %>Store.selected<%= classify(singular) %>() || this.<%= camelize(singular) %>;
+    console.log(this.<%= camelize(singular) %>Store.selected<%= classify(singular) %>());
   }
 
   onSave() {
     if (this.action === Actions.CREATE) {
-      // Update existing <%= capitalize(singular) %>
-      this.<%= capitalize(singular) %>Store.update<%= classify(singular) %>(this.<%= capitalize(singular) %>);
+      // Update existing <%= camelize(singular) %>
+      this.<%= camelize(singular) %>Store.update<%= classify(singular) %>(this.<%= camelize(singular) %>);
       this.router.navigate(['/<%= dasherize(plural) %>']);
     } else {
       // Add new <%= capitalize(singular) %>
-      this.<%= capitalize(singular) %>Store.add<%= classify(singular) %>(this.<%= capitalize(singular) %>);
+      this.<%= camelize(singular) %>Store.add<%= classify(singular) %>(this.<%= camelize(singular) %>);
       this.router.navigate(['/<%= dasherize(plural) %>']);
     }
   }

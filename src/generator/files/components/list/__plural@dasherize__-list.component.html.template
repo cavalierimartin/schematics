@@ -1,44 +1,36 @@
 
-``` html
 <div>
-    <h4><%= classify(plural) %> list</h4>
+    <h4> <%= classify(plural) %> list</h4>
     <button (click)="onAdd()">
         <h5>Add <%= capitalize(singular) %></h5>
     </button>
     @if(<%= camelize(singular) %>Store.state().name === states.LOADED){
-    <div>
-        <table>
-            <tr>
-                <!-- #TODO: Fix this according to interface -->
-                <th>Id</th>
-                <th>Nombre</th>
-                <th>Siglas</th>
-                <th>Símbolo</th>
-                <th>Acciones</th>
-            </tr>
-            @for (<%= camelize(singular) %> of <%= camelize(singular) %>Store.<%= camelize(plural) %>(); track $index){
+        <div>
+            <table>
                 <tr>
-                <!-- #TODO: Fix this according to interface -->
-                <td>{{ <%= camelize(singular) %>.id }}</td>
-                <td>{{ <%= camelize(singular) %>.name }}</td>
-                <td>{{ <%= camelize(singular) %>.code }}</td>
-                <td>{{ <%= camelize(singular) %>.symbol }}</td>
-                <td>
-                    <button (click)="onEdit(<%= camelize(singular) %>)">
-                        Editar
-                    </button>
-                    &NonBreakingSpace;
-                    <button (click)="onDelete(<%= camelize(singular) %>.id)">
-                        Borrar
-                    </button>
-                </td>
+                    <% properties.forEach(prop => { %><th><%= capitalize(prop.name) %></th>
+                    <% }); %><th>Acciones</th>
+                </tr>
+                @for (<%= camelize(singular) %> of <%= camelize(singular) %>Store.<%= camelize(plural) %>(); track $index){
+                    <tr>
+                        <!-- Generar celdas estáticamente -->
+                        <% properties.forEach(prop => { %><td>{{<%= camelize(singular) %>.<%= prop.name %> }}</td>
+                        <% }); %><td>
+                            <button (click)="onEdit(<%= camelize(singular) %>)">
+                                Editar
+                            </button>
+                            &nbsp;
+                            <button (click)="onDelete(<%= camelize(singular) %>.id)">
+                                Borrar
+                            </button>
+                        </td>
+                    </tr>
                 }
-        </table>
-    </div>
+            </table>
+        </div>
     } @else if(<%= camelize(singular) %>Store.state().name === states.ERROR){
-    <h5>Error while loading <%= camelize(plural) %></h5>
+        <h5>Error while loading <%= camelize(plural) %></h5>
     } @else{
-    <app-loading></app-loading>
+        <app-loading></app-loading>
     }
 </div>
-```
